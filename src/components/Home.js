@@ -16,6 +16,7 @@ export default class Home extends Component {
             transcribedData: [],
             name: "",
             target: "",
+            transcribeOrTranslate: "transcribe",
             translatedStr: "",
             transcribedStr: "",
             isStartButtonShow:true
@@ -80,6 +81,12 @@ export default class Home extends Component {
       });
     }
 
+    handleTranscribeOrTranslate = (e) => {
+      this.setState({
+        transcribeOrTranslate: e.target.value
+      })
+      console.log(e.target.value)
+    }
     handleSubmit = (e) => {
       e.preventDefault();
       let joinedStr = this.state.data.join(". ");
@@ -87,15 +94,16 @@ export default class Home extends Component {
       let translateObj = {
         username: this.state.name,
         raw_text: joinedStr,
-        code: this.state.target
+        code: this.state.target,
       }
       console.log(translateObj);
 
-      if(!translateObj.code){
+      if(this.state.transcribeOrTranslate === "transcribe") {
         this.createTranscription(translateObj);
-      } else {
+      } else if(this.state.transcribeOrTranslate === "translate"){
         this.createTranslation(translateObj);
       }
+
       // send this object to the backend
 
       //if(lang) {
@@ -123,23 +131,32 @@ export default class Home extends Component {
             <Form.Group className="mb-3">
               <Form.Label>Language Translation Selection</Form.Label>
               <Form.Select ref="target" onChange={this.handleLanguageChoice}>
-                <option>English</option>
+                <option value="en">English</option>
                 {languageChoices.map( (lang,idx) => (
                   <option key={idx} value={lang.code}>{lang.lang}</option>
                 ))}
                 {/* Do we want to use a function to populate languages? or select just certain ones? */}
               </Form.Select>
             </Form.Group>
-            <div >
-            <Button className="child" type="submit">Translate!</Button>
-            <Button className="child" tybe="submit">Transcribe!</Button>
 
+            <Form.Group>
+              <Form.Label>Transcribe/Translate</Form.Label>
+              <Form.Select ref="transcribeOrTranslate" onChange={this.handleTranscribeOrTranslate}>
+                <option value="transcribe">Transcribe</option>
+                <option value="translate">Translate</option>
+              </Form.Select>
+            </Form.Group>
+            <div >
+            <Button className="child" type="submit">Submit!</Button>
+            <p>Submit will save to a Database</p>
             </div>
           </Form>
 
+          <p>{this.getTranscription}</p>
+
         </div>
         <div className="child2" >
-          <p id='final' ref={this.showRef}>{this.state.data.join(". ")}</p>
+          <p id='final' ref={this.showRef}>{this.state.data}</p>
           <p id='interim'></p>
         </div>
 
