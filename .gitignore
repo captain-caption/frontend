@@ -7,8 +7,8 @@
 
 # testing
 /coverage
-/assets/my-script.js
-/components/my-Home.js
+my-script.js
+my-Home.js
 
 # production
 /build
