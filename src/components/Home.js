@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { speechToText } from '../assets/script.js'
+import {speechToText, stopSpeechToText} from '../assets/script.js'
 import { Button, Form, Modal } from 'react-bootstrap';
 import './Home.css';
 import languageChoices from  '../assets/langChoices.json'
@@ -10,22 +10,28 @@ let SERVER = process.env.REACT_APP_SERVER;
 export default class Home extends Component {
     constructor(props){
         super(props)
+        this.showRef = React.createRef()
         this.state={
             data:[],
             name: "",
             target: "",
             translatedStr: "",
-            transcribedStr: ""
+            transcribedStr: "",
+            isStartButtonShow:true
         }
     }
     
-    handleSpeech = async () => {
-        await speechToText()
-        .then((resolve) => {
-          this.setState({data: [...this.state.data, resolve]});
-        })
-        .then((resolve) => {
-          console.log(this.state.data)
+    handleSpeech = () => {
+      speechToText()
+      this.setState({isStartButtonShow: !this.state.isStartButtonShow})
+    }
+
+    //After the stop button is clicked, data will be updated.
+    stopSpeech = () =>{
+      stopSpeechToText()
+       this.setState(
+         {data:[...this.state.data ,this.showRef.current.innerText],
+          isStartButtonShow: !this.state.isStartButtonShow
         })
     }
 
@@ -91,8 +97,10 @@ export default class Home extends Component {
     return (
       <div className="parent">
         <div className="child1">
-          <Button id="start" variant="danger" onClick={this.handleSpeech}>Record</Button>
-
+          {
+            this.state.isStartButtonShow ? <Button id="start" variant="danger" onClick={this.handleSpeech}>Record</Button> 
+            : <Button variant="secondary" onClick={this.stopSpeech}>Stop</Button>
+          }
           <Form onSubmit={this.handleSubmit}>
             <Form.Group className="mb-3">
               <Form.Label>Name: </Form.Label>
@@ -113,8 +121,9 @@ export default class Home extends Component {
           </Form>
 
         </div>
-        <div className="child2">
-          <p>{this.state.data.join(". ")}</p>
+        <div className="child2" >
+          <p id='final' ref={this.showRef}>{this.state.data.join(". ")}</p>
+          <p id='interim'></p>
         </div>
 
       </div>
