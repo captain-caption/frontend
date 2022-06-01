@@ -2,12 +2,17 @@
 
 ## Links
 
-Trello Board:
+[Trello Board](https://trello.com/b/uDdjyRBW/captain-caption-user-stories-features)
+
+[Figma DM + WF](https://www.figma.com/file/GoLyX821kkeUm6x4f7d8GR/Capn'-Caption?node-id=0%3A1)
+
+[frontend repo](https://github.com/captain-caption/frontend)
+
+[backend repo](https://github.com/captain-caption/backend)
 
 ## Deadlines
 
-- Mock Presentation Date: TBD
-- Final Presentation Date: TBD
+- Final Presentation Date: June 3.
 
 ## Members
 
@@ -16,6 +21,14 @@ Trello Board:
 - Yu-Wei Hsieh
 - Vinny Shipley
 - Dylan Ullrich
+
+## Wire Frame
+
+![Wire Frame](/img/wireframe.png)
+
+## Domain Model
+
+![Domain Model](/img/Domain%20Model.png)
 
 ### Cooperation Plan
 
@@ -140,3 +153,50 @@ In the world of remote work, accessibility has taken new meanings. Transcribed s
 - Minimum Viable Product (MVP) definition.
 
 Browser listens to audio and then presents speech as text in the browser.
+
+## Requirements
+
+### Vision
+
+- What is the vision of this product?
+  - To incorporate accessibility for the deaf and hard of hearing. Additionally, allowing for inclusion of people who speak a language other than the presenter.
+- What pain point does this project solve?
+  - This project solves the need for deaf and hard of hearing to be included in an online presentation.
+- Why should we care about your product?
+  - Everyone deserves a spot at the table and this product will allow those who could not previously participate in online class/seminar.
+
+## Scope (In/Out)
+
+### In
+
+- This app will take in audio and turn it into text
+- This app will allow you to translate the text into another language
+- Users will be able to choose to store text on a DB
+- Users will be able to request all the text they have stored on the DB
+
+### Out
+
+- This app will not translate text to speech
+- This app will not do speech to text for any language other than English
+
+## MVP
+
+- What will your MVP functionality be?
+  - Take in input from a live mic and turn it into text with a possible language translation and store it to a DB if the user would like.
+- What are your stretch goals?
+  - Allow for DB data to be pulled by each individual user.
+- Functional Requirements
+  - A user can input audio from their live microphone for speech to text
+
+## Data Flow
+
+The user will hit begin/start button to start recording their voice
+When they are done they will hit the stop button
+The data will be sent to the speech to text API and the text will be returned
+The data will then be sent to the backend
+If chosen, the text will be sent to the DB and to the translation API to return the data to the user
+
+## Non-Functional Requirements
+
+1. Usability: The font will be displayed in a large manner for readability
+2. Compatitbility: Having an internet connection
