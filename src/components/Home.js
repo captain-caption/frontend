@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import {speechToText, stopSpeechToText} from '../assets/script.js'
-import { Button, Form, Modal } from 'react-bootstrap';
+import { Button, Form } from 'react-bootstrap';
 import './Home.css';
 import languageChoices from  '../assets/langChoices.json'
 import axios from 'axios';
@@ -13,6 +13,7 @@ export default class Home extends Component {
         this.showRef = React.createRef()
         this.state={
             data:[],
+            transcribedData: [],
             name: "",
             target: "",
             translatedStr: "",
@@ -43,16 +44,28 @@ export default class Home extends Component {
     // }
     createTranslation = (translateObj) => {
       axios.post(`${process.env.REACT_APP_SERVER}/translate`, translateObj)
-      .then(res => {console.log(res); this.setState({ translatedStr: res.data}); })
+      .then(res => {console.log(res); this.setState({ translatedStr: res.data, transcribedData: [...this.state.transcribedData, res.data] }); })
       .catch(err => {console.log(err)});
+    }
+
+    // get data from ___ user
+    getTranscription = async () => {
+      axios.get(`${SERVER}/transcript`)
+      .then(res => { console.log(res); this.setState({ transcribedData: res.data}); })
+      .catch(err => { console.log(err) });
     }
 
     createTranscription = (transcribeObj) => {
       let url = `${SERVER}/transcript`
       console.log(url);
       axios.post(`${SERVER}/transcript`, transcribeObj)
-      .then(res => {console.log(res); this.setState({ transcribedStr: res.data}); })
+      .then(res => {console.log(res); this.setState({ transcribedStr: res.data, transcribedData: [...this.state.transcribedData, res.data]}); })
       .catch(err => {console.log(err)});
+    }
+
+    deleteTranscription = (transcribeIdToDelete) => {
+      axios.delete(`${SERVER}/transcript/${transcribeIdToDelete}`)
+      .then(res => { console.log(res); this.setState({transcribedData: this.state.transcribedData.filter(transcription => transcription.__id !== transcribeIdToDelete) }); })
     }
 
     handleUsername = (e) => {
@@ -117,7 +130,11 @@ export default class Home extends Component {
                 {/* Do we want to use a function to populate languages? or select just certain ones? */}
               </Form.Select>
             </Form.Group>
-            <Button type="submit">Translate!</Button>
+            <div >
+            <Button className="child" type="submit">Translate!</Button>
+            <Button className="child" tybe="submit">Transcribe!</Button>
+
+            </div>
           </Form>
 
         </div>
