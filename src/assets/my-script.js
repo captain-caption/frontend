@@ -33,3 +33,7 @@ export function stopSpeechToText(){
     final_transcript=""
     console.log('speechToText => End...')
 }
+
+
+
+
