@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import {speechToText, stopSpeechToText} from '../assets/script.js'
-import { Button, Form } from 'react-bootstrap';
+import { Button, Form, Accordion } from 'react-bootstrap';
 import './Home.css';
 import languageChoices from  '../assets/langChoices.json'
 import axios from 'axios';
@@ -118,6 +118,7 @@ export default class Home extends Component {
 
   render() {
     return (
+      <>
       <div className="parent">
         <div className="child1">
           {
@@ -167,6 +168,19 @@ export default class Home extends Component {
         </div>
 
       </div>
+      <Accordion striped bordered hover>
+          {
+            this.state.transcribedData.map(data =>(
+              <Accordion.Item key={data._id} eventKey={data._id}>
+                <Accordion.Header>{data.username}{data.timestamp}</Accordion.Header>
+                  <Accordion.Body>
+                    {data.raw_text}
+                  </Accordion.Body>
+              </Accordion.Item>
+            ))
+          }
+        </Accordion>
+    </>
     )
   }
 }
