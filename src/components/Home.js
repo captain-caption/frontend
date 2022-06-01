@@ -48,9 +48,9 @@ export default class Home extends Component {
     }
 
     createTranscription = (transcribeObj) => {
-      let url = `${SERVER}/transcribe`
+      let url = `${SERVER}/transcript`
       console.log(url);
-      axios.post(`${SERVER}/transcribe`, transcribeObj)
+      axios.post(`${SERVER}/transcript`, transcribeObj)
       .then(res => {console.log(res); this.setState({ transcribedStr: res.data}); })
       .catch(err => {console.log(err)});
     }
