@@ -52,7 +52,9 @@ export default class Home extends Component {
     // get data from ___ user
     getTranscription = async () => {
       axios.get(`${SERVER}/transcript`)
-      .then(res => { console.log(res); this.setState({ transcribedData: res.data}); })
+      .then(res => {
+         console.log(res.data); this.setState({ transcribedData: res.data}); 
+      })
       .catch(err => { console.log(err) });
     }
 
@@ -151,9 +153,13 @@ export default class Home extends Component {
             <p>Submit will save to a Database</p>
             </div>
           </Form>
-
-          <p>{this.getTranscription}</p>
-
+          {
+            this.state.transcribedData.map(data =>(
+              <div>{data.timestamp}</div>
+            ))
+          }
+          
+          <button onClick={this.getTranscription}>GET</button>
         </div>
         <div className="child2" >
           <p id='final' ref={this.showRef}>{this.state.data}</p>
