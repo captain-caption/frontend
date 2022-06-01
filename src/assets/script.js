@@ -7,26 +7,26 @@ export function speechToText() {
 
     recognition.continunous = true;
     recognition.interimResult = true;
-    recognition.lang='en-US';
+    recognition.lang = 'en-US';
 
     let text = ""
 
-    const start = document.querySelector('#start')
-    start.addEventListener('click', ()=>{
-        recognition.start();
-        console.log('START@@!')
 
-        recognition.onresult=function(e){
-            text = e.results[0][0].transcript
-            var show = document.getElementById('show'); 
-            show.innerHTML = text;
-            console.log(e)
-        }
-    })
+    recognition.start();
+    console.log('START@@!')
 
-    recognition.onend=()=>{
+    recognition.onresult = function (e) {
+        text = e.results[0][0].transcript
+    }
+
+
+    recognition.onend = () => {
         console.log('End...')
     }
-    return text;
-    
+    return new Promise((resolve, reject) => {
+        setTimeout( () => {
+            resolve(text)
+        }, 5000)
+    });
+
 }
