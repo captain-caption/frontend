@@ -1,16 +1,18 @@
 import React, { Component } from 'react'
 import {speechToText, stopSpeechToText} from '../assets/script.js'
-import { Button, Form, Accordion } from 'react-bootstrap';
+import { Button} from 'react-bootstrap';
 import './Home.css';
-import languageChoices from  '../assets/langChoices.json'
 import axios from 'axios';
+import FormData from './FormData/FormData.js';
+import ShowHistory from './ShowHistory/ShowHistory.js';
 
 let SERVER = process.env.REACT_APP_SERVER;
 
 export default class Home extends Component {
     constructor(props){
         super(props)
-        this.showRef = React.createRef()
+        this.finalRef = React.createRef()
+        this.interimRef = React.createRef()
         this.state={
             data:[],
             transcribedData: [],
@@ -19,10 +21,10 @@ export default class Home extends Component {
             transcribeOrTranslate: "transcribe",
             translatedStr: "",
             transcribedStr: "",
-            isStartButtonShow:true
+            isStartButtonShow:true,
         }
     }
-    
+
     handleSpeech = () => {
       speechToText()
       this.setState({isStartButtonShow: !this.state.isStartButtonShow})
@@ -32,20 +34,14 @@ export default class Home extends Component {
     stopSpeech = () =>{
       stopSpeechToText()
        this.setState(
-         {data:[...this.state.data ,this.showRef.current.innerText],
-          isStartButtonShow: !this.state.isStartButtonShow
+         {data:[...this.state.data , this.finalRef.current.innerText, this.interimRef.current.innerText],
+          isStartButtonShow: !this.state.isStartButtonShow,
         })
     }
 
-    //make this async
-    // create a createTranslation
-    // createTranslation = (strToTranslate) => {
-    //   axios.post(``)
-    // server/translate?obj
-    // }
     createTranslation = (translateObj) => {
       axios.post(`${process.env.REACT_APP_SERVER}/translate`, translateObj)
-      .then(res => {console.log(res); this.setState({ translatedStr: res.data, transcribedData: [...this.state.transcribedData, res.data] }); })
+      .then(res => {console.log(res); this.setState({ translatedStr: res.data.translated_text, transcribedData: [...this.state.transcribedData, res.data] }); })
       .catch(err => {console.log(err)});
     }
 
@@ -68,12 +64,12 @@ export default class Home extends Component {
 
     deleteTranscription = (transcribeIdToDelete) => {
       axios.delete(`${SERVER}/transcript/${transcribeIdToDelete}`)
-      .then(res => { console.log(res); this.setState({transcribedData: this.state.transcribedData.filter(transcription => transcription.__id !== transcribeIdToDelete) }); })
+      .then(res => { console.log(res); this.setState({transcribedData: this.state.transcribedData.filter(transcription => transcription.__id !== transcribeIdToDelete).reverse() }); })
     }
 
     handleUsername = (e) => {
       this.setState({
-        name: e.target.value
+          name: e.target.value
       })
     }
 
@@ -91,6 +87,7 @@ export default class Home extends Component {
     }
     handleSubmit = (e) => {
       e.preventDefault();
+      console.log(e)
       let joinedStr = this.state.data.join(". ");
       // create object that looks like:
       let translateObj = {
@@ -106,17 +103,10 @@ export default class Home extends Component {
         this.createTranslation(translateObj);
       }
 
-      // send this object to the backend
-
-      //if(lang) {
-      //   transcribe
-      // } else {
-      //   translate 
-      // }
-
     }
 
   render() {
+    console.log(this.state.translatedStr)
     return (
       <>
       <div className="parent">
@@ -125,61 +115,25 @@ export default class Home extends Component {
             this.state.isStartButtonShow ? <Button id="start" variant="danger" onClick={this.handleSpeech}>Record</Button> 
             : <Button variant="secondary" onClick={this.stopSpeech}>Stop</Button>
           }
-          <Form onSubmit={this.handleSubmit}>
-            <Form.Group className="mb-3">
-              <Form.Label>Name: </Form.Label>
-              <Form.Control id="name" placeholder="Enter your name" onChange={this.handleUsername} />
-            </Form.Group>
-
-            <Form.Group className="mb-3">
-              <Form.Label>Language Translation Selection</Form.Label>
-              <Form.Select ref="target" onChange={this.handleLanguageChoice}>
-                <option value="en">English</option>
-                {languageChoices.map( (lang,idx) => (
-                  <option key={idx} value={lang.code}>{lang.lang}</option>
-                ))}
-                {/* Do we want to use a function to populate languages? or select just certain ones? */}
-              </Form.Select>
-            </Form.Group>
-
-            <Form.Group>
-              <Form.Label>Transcribe/Translate</Form.Label>
-              <Form.Select ref="transcribeOrTranslate" onChange={this.handleTranscribeOrTranslate}>
-                <option value="transcribe">Transcribe</option>
-                <option value="translate">Translate</option>
-              </Form.Select>
-            </Form.Group>
-            <div >
-            <Button className="child" type="submit">Submit!</Button>
-            <p>Submit will save to a Database</p>
-            </div>
-          </Form>
-          {
-            this.state.transcribedData.map(data =>(
-              <div>{data.timestamp}</div>
-            ))
-          }
+          <FormData 
+          handleUsername={this.handleUsername} 
+          handleTranscribeOrTranslate={this.handleTranscribeOrTranslate} 
+          handleLanguageChoice={this.handleLanguageChoice} 
+          handleSubmit={this.handleSubmit}/>
           
-          <button onClick={this.getTranscription}>GET</button>
+          <Button onClick={this.getTranscription}>History</Button>
         </div>
         <div className="child2" >
-          <p id='final' ref={this.showRef}>{this.state.data}</p>
-          <p id='interim'></p>
+          <div id='final' ref={this.finalRef} onChange={this.testing}></div>
+          <div id='interim' ref={this.interimRef}></div>
+          
+        </div>
+        <div>
+          {this.state.translatedStr}
         </div>
 
       </div>
-      <Accordion striped bordered hover>
-          {
-            this.state.transcribedData.map(data =>(
-              <Accordion.Item key={data._id} eventKey={data._id}>
-                <Accordion.Header>{data.username}{data.timestamp}</Accordion.Header>
-                  <Accordion.Body>
-                    {data.raw_text}
-                  </Accordion.Body>
-              </Accordion.Item>
-            ))
-          }
-        </Accordion>
+      <ShowHistory deleteTranscription={this.deleteTranscription} transcribedData={this.state.transcribedData}/>
     </>
     )
   }
