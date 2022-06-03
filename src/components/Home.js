@@ -23,6 +23,7 @@ class Home extends Component {
       translatedStr: '',
       transcribedStr: '',
       isStartButtonShow: true,
+      isHistoryShow: false,
     };
   }
 
@@ -77,6 +78,7 @@ class Home extends Component {
 
   // get data from ___ user
   getTranscription = async () => {
+    this.setState({ isHistoryShow: !this.state.isHistoryShow });
     if (this.props.auth0.isAuthenticated) {
       const res = await this.props.auth0.getIdTokenClaims();
       const jwt = res.__raw;
@@ -89,10 +91,8 @@ class Home extends Component {
           authorization: `Bearer ${jwt}`,
         },
       };
-      console.log(jwt);
       axios(config)
         .then((res) => {
-          console.log(res.data);
           this.setState({ transcribedData: res.data });
         })
         .catch((err) => {
@@ -146,13 +146,11 @@ class Home extends Component {
         },
       };
       axios(config).then((res) => {
-        console.log(res);
         this.setState({
-          transcribedData: this.state.transcribedData
-            .filter(
-              (transcription) => transcription.__id !== transcribeIdToDelete
-            )
-            .reverse(),
+          transcribedData: this.state.transcribedData.filter(
+            (transcription) => transcription.__id !== transcribeIdToDelete
+          ),
+          isHistoryShow: false,
         });
       });
     } else {
@@ -198,7 +196,6 @@ class Home extends Component {
   };
 
   render() {
-    console.log(this.state.translatedStr);
     return (
       <>
         <div className="parent">
@@ -227,10 +224,14 @@ class Home extends Component {
           </div>
           <div>{this.state.translatedStr}</div>
         </div>
-        <ShowHistory
-          deleteTranscription={this.deleteTranscription}
-          transcribedData={this.state.transcribedData}
-        />
+        {this.state.isHistoryShow ? (
+          <ShowHistory
+            deleteTranscription={this.deleteTranscription}
+            transcribedData={this.state.transcribedData}
+          />
+        ) : (
+          <></>
+        )}
       </>
     );
   }
