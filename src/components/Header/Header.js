@@ -7,7 +7,7 @@ class Header extends Component {
     return (
       <Navbar bg="dark" variant="dark">
         <Container>
-          <Navbar.Brand href="home">What'd ye say?</Navbar.Brand>
+          <Navbar.Brand href="home">Captain Caption</Navbar.Brand>
           <Nav className="me-auto">
             <Nav.Link href="/">Home</Nav.Link>
             <Nav.Link href="/about">About the Devs</Nav.Link>
